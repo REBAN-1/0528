@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ant Design CDN Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.17.4/antd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.17.4/reset.min.css">
+</head>
+
+<body>
+
+    <div id="app"></div>
+
+    <script type="text/babel" type="module">
+        console.log(window['antd']);
+        const DatePicker = window['antd'].DatePicker
+        const { createRoot } = ReactDOM;
+        const { createElement } = React;
+        const { Button, Checkbox, Form, Input } = antd;
+
+        const onFinish = (values) => {
+            console.log('Success:', values);
+        };
+        const onFinishFailed = (errorInfo) => {
+            console.log('Failed:', errorInfo);
+        };
+        const App = () => (
+            <Form
+                name="basic"
+                labelCol={{
+                    span: 8,
+                }}
+                wrapperCol={{
+                    span: 16,
+                }}
+                style={{
+                    maxWidth: 600,
+                }}
+                initialValues={{
+                    remember: true,
+                }}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
+            >
+                <Form.Item
+                    label="Username"
+                    name="username"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your username!',
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
+                    label="Password"
+                    name="password"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please input your password!',
+                        },
+                    ]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item
+                    name="remember"
+                    valuePropName="checked"
+                    wrapperCol={{
+                        offset: 8,
+                        span: 16,
+                    }}
+                >
+                    <Checkbox>Remember me</Checkbox>
+                </Form.Item>
+
+                <Form.Item
+                    wrapperCol={{
+                        offset: 8,
+                        span: 16,
+                    }}
+                >
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                </Form.Item>
+            </Form>
+        );
+
+        ReactDOM.render(<App />, document.getElementById('app'));
+    </script>
+</body>
+
+</html>
