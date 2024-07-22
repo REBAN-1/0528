@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAP ドキュメント</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+  <style>
+    /* 既存のスタイルを維持 */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans JP', sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .main-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background-color: #ffffff;
+      border-bottom: 1px solid #eaecef;
+      padding: 0.7rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      height: 30px;
+      vertical-align: middle;
+    }
+
+    .main-header-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .main-header-links a {
+      color: #2c3e50;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .content-wrapper {
+      margin-top: 60px;
+      /* ヘッダーの高さに応じて調整 */
+      display: flex;
+      flex-grow: 1;
+    }
+
+    .sidebar {
+      width: 280px;
+      background-color: #fff;
+      border-right: 1px solid #eaecef;
+      padding: 2rem 0;
+      overflow-y: auto;
+      height: calc(100vh - 60px);
+      /* ビューポートの高さからヘッダーの高さを引く */
+      position: fixed;
+      top: 60px;
+      /* ヘッダーの高さ */
+      left: 0;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 2rem;
+      margin-left: 280px;
+      /* サイドバーの幅 */
+    }
+
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0 1rem;
+    }
+
+    .sidebar li {
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #2c3e50;
+      font-weight: 500;
+    }
+
+    .sidebar a:hover {
+      color: #0f62fe;
+    }
+
+    .content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .content p {
+      margin: 1em 0;
+    }
+
+    .content code {
+      background-color: #f3f4f5;
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+      font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size: 0.85em;
+    }
+
+    .banner {
+      background-color: #0f62fe;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .accordion-section {
+      margin-bottom: 1rem;
+    }
+
+    .accordion-header {
+      background-color: #f3f4f5;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-content {
+      padding-left: 1rem;
+    }
+
+    .active-page {
+      color: #0f62fe !important;
+      font-weight: 700;
+    }
+
+    .subsection {
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .subsection h2 {
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function AccordionSection({ title, items, activeSection, setActiveSection }) {
+      const [isOpen, setIsOpen] = useState(false);
+
+      return React.createElement("div", { className: "accordion-section" },
+        React.createElement("div", {
+          className: "accordion-header",
+          onClick: () => setIsOpen(!isOpen)
+        },
+          title,
+          React.createElement("i", {
+            className: isOpen ? "fas fa-chevron-down" : "fas fa-chevron-right"
+          })
+        ),
+        isOpen && React.createElement("ul", { className: "accordion-content" },
+          items.map(item =>
+            React.createElement("li", { key: item.key },
+              React.createElement("a", {
+                href: "#",
+                onClick: () => setActiveSection(item.key),
+                className: activeSection === item.key ? "active-page" : ""
+              }, item.title)
+            )
+          )
+        )
+      );
+    }
+
+    function Subsection({ title, content }) {
+      return React.createElement("div", { className: "subsection" },
+        React.createElement("h2", null, title),
+        content
+      );
+    }
+
+    function App() {
+      const [activeSection, setActiveSection] = useState('overview');
+
+      const sections = {
+        overview: {
+          title: "SAP概要",
+          content: [
+            {
+              title: "SAPとは",
+              content: React.createElement("p", null,
+                "SAP（Systems, Applications, and Products in Data Processing）は、企業の業務プロセスを統合管理するERPシステムを提供する世界的なソフトウェア企業です。様々な業種や規模の企業に対して、効率的な業務運営と意思決定をサポートするソリューションを提供しています。"
+              )
+            },
+            {
+              title: "SAPの特徴",
+              content: React.createElement("p", null,
+                "SAPの主な特徴には、モジュール間の密接な連携、リアルタイムデータ処理、柔軟なカスタマイズ性、そしてグローバル対応があります。これらの特徴により、企業は業務プロセスを最適化し、データに基づいた迅速な意思決定を行うことができます。"
+              )
+            }
+          ]
+        },
+        mm: {
+          title: "MM（資材管理）",
+          content: [
+            {
+              title: "MMモジュールの概要",
+              content: React.createElement("p", null,
+                "MM（Materials Management）モジュールは、企業の調達プロセスと在庫管理を扱います。購買依頼から支払いまでの一連のプロセスを管理し、効率的な在庫管理と原価管理をサポートします。"
+              )
+            },
+            {
+              title: "主要機能",
+              content: React.createElement("p", null,
+                "主な機能には、購買依頼、発注、入荷、在庫管理、請求書照合などがあります。これらの機能により、企業は調達プロセスを最適化し、コスト削減と効率向上を実現できます。"
+              )
+            }
+          ]
+        },
+        sd: {
+          title: "SD（販売管理）",
+          content: [
+            {
+              title: "SDモジュールの概要",
+              content: React.createElement("p", null,
+                "SD（Sales and Distribution）モジュールは、企業の販売プロセスと物流を管理します。受注から出荷、請求までの一連のプロセスを効率的に処理し、顧客満足度の向上と売上管理を支援します。"
+              )
+            },
+            {
+              title: "主要機能",
+              content: React.createElement("p", null,
+                "主な機能には、見積作成、受注管理、出荷処理、請求書発行、与信管理などがあります。これらの機能を通じて、企業は販売活動を最適化し、顧客対応の質を向上させることができます。"
+              )
+            }
+          ]
+        },
+        pp: {
+          title: "PP（生産管理）",
+          content: [
+            {
+              title: "PPモジュールの概要",
+              content: React.createElement("p", null,
+                "PP（Production Planning）モジュールは、製造業向けの生産計画と管理を行います。需要予測から生産計画、実行、そして実績管理までの一連のプロセスをサポートし、効率的な生産活動を実現します。"
+              )
+            },
+            {
+              title: "主要機能",
+              content: React.createElement("p", null,
+                "主な機能には、需要管理、資材所要量計画（MRP）、能力計画、製造指図、工程管理などがあります。これらの機能により、企業は生産リソースを最適化し、生産性を向上させることができます。"
+              )
+            }
+          ]
+        },
+        fi: {
+          title: "FI（財務会計）",
+          content: [
+            {
+              title: "FIモジュールの概要",
+              content: React.createElement("p", null,
+                "FI（Financial Accounting）モジュールは、企業の財務会計プロセスを管理します。総勘定元帳、債権管理、債務管理、資産管理などの機能を提供し、正確な財務報告と法令遵守をサポートします。"
+              )
+            },
+            {
+              title: "主要機能",
+              content: React.createElement("p", null,
+                "主な機能には、仕訳入力、勘定残高管理、決算処理、財務諸表作成、支払処理、入金処理などがあります。これらの機能を通じて、企業は財務状況を正確に把握し、適切な財務管理を行うことができます。"
+              )
+            }
+          ]
+        },
+        co: {
+          title: "CO（管理会計）",
+          content: [
+            {
+              title: "COモジュールの概要",
+              content: React.createElement("p", null,
+                "CO（Controlling）モジュールは、企業の内部管理会計をサポートします。原価計算、予算管理、収益性分析などの機能を提供し、経営者の意思決定を支援します。"
+              )
+            },
+            {
+              title: "主要機能",
+              content: React.createElement("p", null,
+                "主な機能には、原価センター会計、内部指図、利益センター会計、製品原価計算、収益性分析などがあります。これらの機能により、企業は詳細なコスト分析と収益管理を行い、経営効率を向上させることができます。"
+              )
+            }
+          ]
+        },
+        ps: {
+          title: "PS（プロジェクトシステム）",
+          content: [
+            {
+              title: "PSモジュールの概要",
+              content: React.createElement("p", null,
+                "PS（Project System）モジュールは、大規模プロジェクトの計画と実行を管理します。プロジェクトの構造計画、スケジュール管理、予算管理、進捗管理などの機能を提供し、効率的なプロジェクト運営をサポートします。"
+              )
+            },
+            {
+              title: "主要機能",
+              content: React.createElement("p", null,
+                "主な機能には、プロジェクト構造計画（WBS）、ネットワーク図作成、リソース管理、予算・コスト管理、進捗管理などがあります。これらの機能を通じて、企業は複雑なプロジェクトを効果的に管理し、目標達成を促進することができます。"
+              )
+            }
+          ]
+        }
+      };
+
+      const menuSections = [
+        {
+          title: "SAP概要",
+          items: [
+            { key: "overview", title: "SAP概要" }
+          ]
+        },
+        {
+          title: "主要モジュール",
+          items: [
+            { key: "mm", title: "MM（資材管理）" },
+            { key: "sd", title: "SD（販売管理）" },
+            { key: "pp", title: "PP（生産管理）" },
+            { key: "fi", title: "FI（財務会計）" },
+            { key: "co", title: "CO（管理会計）" },
+            { key: "ps", title: "PS（プロジェクトシステム）" }
+          ]
+        }
+      ];
+
+      return React.createElement("div", { className: "app" },
+        React.createElement("header", { className: "main-header" },
+          React.createElement("img", { src: "https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg", alt: "SAP logo", className: "logo" }),
+          React.createElement("nav", { className: "main-header-links" },
+            React.createElement("a", { href: "#" }, "ドキュメント"),
+            React.createElement("a", { href: "#" }, "製品"),
+            React.createElement("a", { href: "#" }, "サービス"),
+            React.createElement("a", { href: "#" }, "コミュニティ")
+          )
+        ),
+        React.createElement("div", { className: "content-wrapper" },
+          React.createElement("div", { className: "sidebar" },
+            menuSections.map((section, index) =>
+              React.createElement(AccordionSection, {
+                key: index,
+                title: section.title,
+                items: section.items,
+                activeSection: activeSection,
+                setActiveSection: setActiveSection
+              })
+            )
+          ),
+          React.createElement("div", { className: "main-content" },
+            React.createElement("div", { className: "content" },
+              React.createElement("h1", null, sections[activeSection].title),
+              sections[activeSection].content.map((subsection, index) =>
+                React.createElement(Subsection, {
+                  key: index,
+                  title: subsection.title,
+                  content: subsection.content
+                })
+              )
+            )
+          )
+        )
+      );
+    }
+
+    ReactDOM.render(React.createElement(App), document.getElementById('root'));
+  </script>
+</body>
+
+</html>
